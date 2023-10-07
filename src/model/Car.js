@@ -190,7 +190,7 @@ export class Car{
                         }else{
                             // targetDoor.rotation.set(0, 0, 0)
                             this.setDoorAnimation(targetDoor,{x:0})
-                            targetDoor.useData.isOpen = false
+                            targetDoor.userData.isOpen = false
                         }
                    })
                 }

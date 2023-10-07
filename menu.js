@@ -19,3 +19,13 @@ coatDivList.forEach(el => {
     EventBus.getInstance().emit('celPrice')
   })
 })
+
+// 场景切换
+const sceneDivList = document.querySelectorAll('.scene_group>div')
+sceneDivList.forEach(el => {
+  el.addEventListener('click', () => {
+    const sceneName = el.dataset.poi
+    // 场景名字 => 事件总线 => Sky 类
+    EventBus.getInstance().emit('changeSky', sceneName)
+  })
+})
