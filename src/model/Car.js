@@ -214,6 +214,11 @@ export class Car{
             document.querySelector('.price>span').innerHTML = `¥ ${celPrice.toFixed(2)}`
         })
         EventBus.getInstance().on('changeCarAngleView', viewName=>{
+            if(viewName!=='outside'){
+                this.controls.minDistance = 0
+            }else{
+                this.controls.minDistance = 3
+            }
             this.setCameraAnimation(this.positionObj[viewName])
         })
 
