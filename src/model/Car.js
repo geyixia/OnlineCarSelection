@@ -121,6 +121,38 @@ export class Car{
                 }
             })
         })
+        // 订阅汽车贴膜切换的效果
+        EventBus.getInstance().on('changeCarCoat', coatName => {
+            if (coatName === '高光') {
+                Object.values(this.carModel.body).forEach(obj => {
+                    obj.model.material.roughness = 0.5
+                    obj.model.material.metalness = 1
+                    obj.model.material.clearcoat = 1
+                })
+            } else if (coatName === '磨砂') {
+                Object.values(this.carModel.body).forEach(obj => {
+                    obj.model.material.roughness = 1
+                    obj.model.material.metalness = 0.5 // 如果为 0 显得很假
+                    obj.model.material.clearcoat = 0
+                })
+            }
+    
+            // 保存用户选择的贴膜类型
+            Object.values(this.info.film).forEach(obj => {
+                obj.isSelected = false
+                if (obj.name === coatName) obj.isSelected = true
+                // 为后面计算总价做准备
+            })
+        })
+        // 订阅计算总价事件
+        EventBus.getInstance().on('celPrice', () => {
+            const filmTarget = this.info.film.find(obj => obj.isSelected)
+    
+            // 动态总价
+            const celPrice = this.info.allPrice + filmTarget.price
+            document.querySelector('.price>span').innerHTML = `¥ ${celPrice.toFixed(2)}`
+        })
+
     }
     // 修改汽车的方法 物理网格材质 - 薄膜
     modifyCarBody(){
