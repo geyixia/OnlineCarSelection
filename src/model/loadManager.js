@@ -10,7 +10,7 @@ export function loadManager(path, successFun){
         successFun(gltf.scene)
     }, process=>{
         // 打印加载进度
-        console.log(process)
+        // console.log(process)
     },error=>{
         throw new Error(error)
     })

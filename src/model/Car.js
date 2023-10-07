@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { MySprite } from './MySprite'
 import { ClickHandler } from '@/utils/ClickHandler'
 import gsap from 'gsap'
+import { EventBus } from '@/utils/EventBus'
 // 汽车的公共类
 export class Car{
     constructor(model, scene, camera, controls){
@@ -47,6 +48,50 @@ export class Car{
                 },
             }
         }
+        // 车数值相关（记录用于发给后台-保存用户要购车相关信息）
+        this.info = {
+            allPrice: 2444700, // 车整体默认总价
+            color: [
+            {
+                name: '土豪金',
+                color: '#ff9900',
+                isSelected: true
+            },
+            {
+                name: '传奇黑',
+                color: '#343a40',
+                isSelected: false
+            },
+            {
+                name: '海蓝',
+                color: '#409EFF',
+                isSelected: false
+            },
+            {
+                name: '玫瑰紫',
+                color: '#6600ff',
+                isSelected: false
+            },
+            {
+                name: '银灰色',
+                color: '#DCDFE6',
+                isSelected: false
+            }
+            ],
+            // 贴膜
+            film: [
+            {
+                name: '高光',
+                price: 0,
+                isSelected: true
+            },
+            {
+                name: '磨砂',
+                price: 20000,
+                isSelected: false
+            }
+            ]
+        }
 
         this.init()
         this.modifyCarBody()
@@ -62,6 +107,19 @@ export class Car{
             if(target){
                 obj.model = target
             }
+        })
+        // 订阅汽车修改颜色的事件和函数体
+        EventBus.getInstance().on('changeCarColor',(colorStr)=>{
+            Object.values(this.carModel.body).forEach(obj=>{
+                obj.model.material.color = new THREE.Color(colorStr)
+            })
+            // 用户选择的颜色同步保存到数据库 this.info.color中标注用户选择的颜色
+            this.info.color.forEach(obj=>{
+                obj.isSelected = false
+                if(obj.color === colorStr){
+                    obj.isSelected = true
+                }
+            })
         })
     }
     // 修改汽车的方法 物理网格材质 - 薄膜
