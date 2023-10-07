@@ -46,7 +46,21 @@ export class Car{
                         }
                     ]
                 },
-            }
+            },
+            'glass': { // 玻璃
+                'front': { // 前玻璃
+                  name: 'Object_90',
+                  model: {}
+                },
+                'leftGlass': { // 左玻璃
+                  name: 'Object_68',
+                  model: {}
+                },
+                'rightGlass': { // 右玻璃
+                  name: 'Object_81',
+                  model: {}
+                }
+              }
         }
         // 车数值相关（记录用于发给后台-保存用户要购车相关信息）
         this.info = {
@@ -92,6 +106,48 @@ export class Car{
             }
             ]
         }
+        // 汽车各种视角坐标对象
+        this.positionObj = {
+            // 主驾驶
+            main: {
+                camera: {
+                    x: 0.36,
+                    y: 0.96,
+                    z: -0.16
+                },
+                controls: {
+                    x: 0.36,
+                    y: 0.87,
+                    z: 0.03
+                }
+            },
+            // 副驾驶位
+            copilot: {
+                camera: {
+                    x: -0.39,
+                    y: 0.87,
+                    z: 0.07
+                },
+                controls: {
+                    x: -0.39,
+                    y: 0.85,
+                    z: 0.13
+                }
+            },
+            // 外面观察
+            outside: {
+                camera: {
+                    x: 3,
+                    y: 1.5,
+                    z: 3
+                },
+                controls: {
+                    x: 0,
+                    y: 0,
+                    z: 0
+                }
+            }
+        }
 
         this.init()
         this.modifyCarBody()
@@ -107,6 +163,11 @@ export class Car{
             if(target){
                 obj.model = target
             }
+        })
+        // 玻璃相关
+        Object.values(this.carModel.glass).forEach(obj => {
+            // 通过名字找到小物体
+            obj.model = this.model.getObjectByName(obj.name)
         })
         // 订阅汽车修改颜色的事件和函数体
         EventBus.getInstance().on('changeCarColor',(colorStr)=>{
@@ -152,6 +213,9 @@ export class Car{
             const celPrice = this.info.allPrice + filmTarget.price
             document.querySelector('.price>span').innerHTML = `¥ ${celPrice.toFixed(2)}`
         })
+        EventBus.getInstance().on('changeCarAngleView', viewName=>{
+            this.setCameraAnimation(this.positionObj[viewName])
+        })
 
     }
     // 修改汽车的方法 物理网格材质 - 薄膜
@@ -167,6 +231,12 @@ export class Car{
         Object.values(this.carModel.body).forEach(obj=>{
             obj.model.material = bodyMaterial
         })
+        // 改变玻璃渲染面
+        Object.values(this.carModel.glass).forEach(obj => {
+            obj.model.material.side = THREE.FrontSide // 前面渲染
+        })
+        // 车顶部两面渲染
+        this.carModel.body.roof.model.material.side = THREE.DoubleSide
     }
     // 创建车门上的热点精灵物体
     createDoorSprite(){
@@ -201,6 +271,19 @@ export class Car{
     setDoorAnimation(mesh, obj){
         gsap.to(mesh.rotation,{
             x: obj.x,
+            duration: 1,
+            ease: 'power1.in'
+        })
+    }
+    // 摄像机和轨道控制器动画
+    setCameraAnimation(dataObj) {
+        gsap.to(this.camera.position, {
+            ...dataObj.camera,
+            duration: 1,
+            ease: 'power1.in'
+        })
+        gsap.to(this.controls.target, {
+            ...dataObj.controls,
             duration: 1,
             ease: 'power1.in'
         })

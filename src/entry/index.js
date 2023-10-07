@@ -35,6 +35,10 @@ function init() {
 
 function createControls() {
   controls = new OrbitControls(camera, renderer.domElement)
+  // 限制轨道控制器 垂直角度和缩放
+  controls.minPolarAngle = 0.25 * Math.PI // 看到部分地面
+  // 禁止缩放
+  controls.enableZoom = false
 }
 
 function createHelper() {

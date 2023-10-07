@@ -29,3 +29,13 @@ sceneDivList.forEach(el => {
     EventBus.getInstance().emit('changeSky', sceneName)
   })
 })
+
+// 视角切换
+const lookDivList = document.querySelectorAll('.look_group>div')
+lookDivList.forEach(el => {
+  el.addEventListener('click', () => {
+    const viewName = el.dataset.po
+    // 视角名字 => 事件总线 => Car 类
+    EventBus.getInstance().emit('changeCarAngleView', viewName)
+  })
+})
