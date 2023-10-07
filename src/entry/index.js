@@ -63,7 +63,7 @@ function renderLoop() {
 function start() {
   init()
   createControls()
-  createHelper()
+  // createHelper()
   resizeRender()
   renderLoop()
 }
