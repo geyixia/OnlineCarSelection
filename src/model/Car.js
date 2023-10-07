@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { MySprite } from './MySprite'
 import { ClickHandler } from '@/utils/ClickHandler'
+import gsap from 'gsap'
 // 汽车的公共类
 export class Car{
     constructor(model, scene, camera, controls){
@@ -90,14 +91,28 @@ export class Car{
                    // 为精灵物体进行射线交互的绑定
                    ClickHandler.getInstance().addMesh(sprite, (clickThreeObj)=>{
                     //    点击时触发这里的代码
-                    console.log(clickThreeObj.parent)// 父级目标车门
-                    const targetDoor = clickThreeObj.parent
-                    targetDoor.rotation.set(Math.PI / 3, 0, 0)
+                    // console.log(clickThreeObj.parent)// 父级目标车门
+                    const targetDoor = clickThreeObj.parent.parent.parent
+                        if(!targetDoor.userData.isOpen){
+                            // targetDoor.rotation.set(Math.PI / 3, 0, 0)
+                            this.setDoorAnimation(targetDoor,{x:Math.PI / 3})
+                            targetDoor.userData.isOpen = true
+                        }else{
+                            // targetDoor.rotation.set(0, 0, 0)
+                            this.setDoorAnimation(targetDoor,{x:0})
+                            targetDoor.useData.isOpen = false
+                        }
                    })
                 }
             })
         })
-
-
+    }
+    // 车开门动画
+    setDoorAnimation(mesh, obj){
+        gsap.to(mesh.rotation,{
+            x: obj.x,
+            duration: 1,
+            ease: 'power1.in'
+        })
     }
 }
